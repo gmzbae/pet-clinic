@@ -29,4 +29,4 @@ jobs:
         mvn package
         docker build --tag ghcr.io/gmzbae/pet-clinic:latest -f Dockerfile .
         docker login --username gmzbae --password $GITHUB_TOKEN ghcr.io
-        docker push ghcr.io/bettercodepaul/petclinic:latest
+        docker push ghcr.io/gmzbae/pet-clinic:latest
