@@ -3,8 +3,7 @@ on: [ push ]
 env:
 #### An dieser Stelle müssen eure persönlichen Umgebungsvariablen eingetragen werden
   # Tip: Die Token/der API-Key werden als Secrets in den Repository-Settings eingetragen und hier referenziert.
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
-  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  GITHUB_TOKEN: ${{ secrets.PET_CLINIC_SECRET }}
 jobs:
   compile:
     name: Compile
@@ -17,10 +16,17 @@ jobs:
         distribution: temurin
         java-version: 11
         cache: maven
-    #### AUFGABE 2: SONAR
-      # hier ist der Platz für die Konfiguration der Sonar Analyse
-  
+
+    - name: Cache Maven packages
+      uses: actions/cache@v1
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ runner.os }}-m2
+
     - name: Compile, build and push
       run: |
-        #### AUFGABE 3 COMPILE, DOCKER BUILD UND PUSH
-          # hier ist Platz für maven package und docker build
+        mvn package
+        docker build --tag ghcr.io/bettercodepaul/petclinic:latest -f Dockerfile .
+        docker login --username jny-gk --password $GITHUB_ACCESSTOKEN ghcr.io
+        docker push ghcr.io/bettercodepaul/petclinic:latest
